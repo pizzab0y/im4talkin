@@ -4,8 +4,6 @@
 
 ML System Design Doc - план по построению системы на основе машинного обучения для решения конкретной задачи в конкретных условиях. 
 
-![image](https://user-images.githubusercontent.com/12476970/227248587-11e2f92f-51ad-4edb-9eab-1dc4b8f8e902.png)
-
 ## Зачем нужен ML System Design Doc
 
 ### Кратко:
