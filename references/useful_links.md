@@ -8,3 +8,4 @@
 ### [Another speech syntesizer](https://elevenlabs.io/#)
 ### [Speech translation&transcription model comparison](https://blog.gdeltproject.org/experiments-with-speech-transcription-translation-metas-seamlessm4t-vs-openais-whisper-vs-gcps-sttgt-vs-gcps-usm-chirpgt/) <i>Haven't read yet</i>
 ### [Small article explaining SeamlessM4t](https://dataconomy.com/2023/08/23/meta-seamlessm4t-translation-model/)
+#### [How FAISS works](https://medium.com/loopio-tech/how-to-use-faiss-to-build-your-first-similarity-search-bf0f708aa772)
