@@ -17,3 +17,4 @@ There are two different ways to store the user's data in vector form:
 * [ ] FAISS (Open Source)
 
 We should decide which one to choose according to data size and the processing speed. 
+### Background sound would help to create the presence effect.
