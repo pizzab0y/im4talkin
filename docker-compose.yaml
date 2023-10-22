@@ -1,0 +1,80 @@
+version: "3.8"
+services:
+  redis:
+    platform: linux/amd64
+    container_name: redis_container
+    image: redis:latest
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data      
+
+  postgres:
+    platform: linux/amd64
+    container_name: postgres_container
+    build: ./postgres
+    restart: always
+    ports:
+      - 5433:${DB_PORT}
+    volumes:
+      - ./postgres/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+ # pgadmin:
+  #   container_name: pgadmin4_container
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+  #   ports:
+  #     - 5050:80
+  #   depends_on:
+  #     - postgres     
+
+  # service1:
+  #   container_name: service1_container
+  #   build: ./service1
+  #   volumes:
+  #     - ./service1:/app
+  #   ports:
+  #     - 7000:80
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - postgres
+  #   restart: always
+
+  service2:
+    container_name: service2_container
+    build: ./service2
+    ports:
+      - 8000:80
+    depends_on:
+      - postgres
+    restart: always
+
+  service3:
+    container_name: service3_container
+    build: ./service3
+    ports:
+      - 9000:80
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: frontend_container
+    build: ./frontend
+    ports:
+      - "3001:3000"
+    restart: always
+
+volumes:
+  redis_data:
+  # postgres_data:
+  # redis2_data:

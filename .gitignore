@@ -90,3 +90,6 @@ target/
 
 # Pylint settings
 .pylintrc
+
+# The stuff I want to exclude
+_*/
