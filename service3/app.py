@@ -94,10 +94,14 @@ async def service3(conversation_id: str, conversation: Conversation):
     query = conversation.conversation[-1].content
 
     docs = retriever.get_relevant_documents(query=query)
-    docs = format_docs(docs=docs)
+    # docs = format_docs(docs=docs)
 
     prompt = system_message_prompt.format(context=docs)
+    print("BITCH")
+    print(prompt)
+    print("FUCK")
     messages = [prompt] + create_messages(conversation=conversation.conversation)
+    print(messages)
 
     result = chat(messages)
 

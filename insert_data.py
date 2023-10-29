@@ -18,12 +18,12 @@ loader = DirectoryLoader(
     "./data/external/", glob="**/*.txt", loader_cls=TextLoader, show_progress=True
 )
 documents = loader.load()
-text_splitter = CharacterTextSplitter(chunk_size=250, chunk_overlap=0)
+text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 docs = text_splitter.split_documents(documents)
 
 # PGVector needs the connection string to the database.
 # CONNECTION_STRING = f"postgresql+psycopg2://admin:admin@127.0.0.1:5433/vectordb"
-CONNECTION_STRING = f"postgresql+psycopg2://{PG_USERNAME}:{PG_PASSWORD}@postgres:{PG_PORT}/{PG_DB}"
+CONNECTION_STRING = f"postgresql+psycopg2://{PG_USERNAME}:{PG_PASSWORD}@0.0.0.0:5433/{PG_DB}"
 
 
 COLLECTION_NAME = "vectordb"

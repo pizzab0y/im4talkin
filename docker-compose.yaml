@@ -23,9 +23,11 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
- # pgadmin:
+  # pgadmin:
   #   container_name: pgadmin4_container
   #   image: dpage/pgadmin4
+  #   # logging:
+  #   #   driver: none
   #   restart: always
   #   environment:
   #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
@@ -60,6 +62,7 @@ services:
   service3:
     container_name: service3_container
     build: ./service3
+    restart: always
     ports:
       - 9000:80
     env_file:

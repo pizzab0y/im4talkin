@@ -61,6 +61,8 @@ const App = () => {
     setConversation(data);
     setUserMessage("");
     setIsLoading(false);
+
+
   };
 
   return (
@@ -76,22 +78,41 @@ const App = () => {
     >
       <h1 className="text-3xl font-bold mb-4 text-white">Hi! im4talkin 🇬🇧</h1>
       {conversation.conversation.length > 0 && (
-        <div className="flex flex-col p-4 bg-white rounded shadow w-full max-w-md space-y-4">
+        <div
+          className="flex flex-col p-4 bg-white rounded shadow w-full max-w-md space-y-4"
+          style={{
+            maxHeight: "75vh",
+            overflow: "auto",
+            flexDirection: "column-reverse",
+            overflowAnchor: "auto !important"
+          }}
+        >
+          <div>
           {conversation.conversation
             .filter((message) => message.role !== "system")
             .map((message, index) => (
               <div
                 key={index}
                 className={`${
-                  message.role === "user" ? "text-right" : "text-left"
+                  message.role === "user" ? "text-right bg-gray-200" : "text-left"
                 }`}
+                style={{
+                  transform: "translateZ(0)", /* fixes a bug in Safari iOS where the scroller doesn't update */
+                }}
               >
                 <strong className="font-bold text-gray-900">
-                  {message.role}:
+                  {`${message.role}: `}
                 </strong>
-                <span className="text-gray-700">{message.content}</span>
+                <span
+                  className={`${
+                    message.role === "user" ? "text-gray-900" : "text-gray-700"
+                  }`}
+                >
+                  {message.content}
+                </span>
               </div>
             ))}
+          </div>
         </div>
       )}
       <div className="flex flex-row w-full max-w-md mt-4">
