@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaSpinner } from "react-icons/fa";
+import AudioRecorder from './audiorecorder.jsx'
 
 const App = () => {
   const [conversation, setConversation] = useState({ conversation: [] });
@@ -149,6 +150,9 @@ const App = () => {
       >
         New Session
       </button>
+      <div>
+        <AudioRecorder />
+      </div>
     </div>
   );
 };
