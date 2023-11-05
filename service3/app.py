@@ -97,9 +97,9 @@ async def service3(conversation_id: str, conversation: Conversation):
     # docs = format_docs(docs=docs)
 
     prompt = system_message_prompt.format(context=docs)
-    print("BITCH")
+    print("PITCH")
     print(prompt)
-    print("FUCK")
+    print("DUCK")
     messages = [prompt] + create_messages(conversation=conversation.conversation)
     print(messages)
 
