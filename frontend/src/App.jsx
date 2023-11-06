@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaSpinner } from "react-icons/fa";
-import AudioRecorder from './audiorecorder.jsx'
+import AudioRecorder from './audiorecorder.jsx';
+import axios from 'axios';
 
 const App = () => {
   const [conversation, setConversation] = useState({ conversation: [] });
@@ -132,12 +133,17 @@ const App = () => {
         />
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
-          className="p-2 rounded bg-blue-800 text-white"
+          disabled={isLoading | !userMessage}
+          className={
+            isLoading | !userMessage
+            ? "p-2 rounded text-white bg-blue-400"
+            : "p-2 rounded text-white bg-blue-800"
+          } 
         >
           Send
         </button>
       </div>
+      <AudioRecorder />
       {isLoading && (
         <div className="flex items-center space-x-4 text-l text-white">
           <FaSpinner className="animate-spin" />
@@ -150,9 +156,6 @@ const App = () => {
       >
         New Session
       </button>
-      <div>
-        <AudioRecorder />
-      </div>
     </div>
   );
 };

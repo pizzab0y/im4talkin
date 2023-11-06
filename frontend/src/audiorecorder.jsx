@@ -13,59 +13,75 @@ class AudioRecorder extends Component {
   }
 
   handleSuccess = (stream) => {
-    const options = { mimeType: 'audio/webm' };
-    const mediaRecorder = new MediaRecorder(stream, options);
+    // const options = { 'mimeType': 'audio/wav' };
+    // const mediaRecorder = new MediaRecorder(stream, options);
+    const mediaRecorder = new MediaRecorder(stream);
     const startButton = document.getElementById('start');
     const stopButton = document.getElementById('stop');
     
-    this.setState({ mediaRecorder });
+    // this.setState({ mediaRecorder });
 
     let audioStartTime = 0;
     
-    mediaRecorder.addEventListener('dataavailable', (e) => {
-      if (e.data.size > 0) {
-        this.setState((prevState) => ({
-          recordedChunks: [...prevState.recordedChunks, e.data],
-        }));
-      }
-    });
-
-    mediaRecorder.addEventListener('stop', () => {
-      const blob = new Blob(this.state.recordedChunks, { type: 'audio/webm' });
-      const url = URL.createObjectURL(blob);
-      const downloadLink = document.getElementById('download');
-      downloadLink.href = url;
-      downloadLink.download = 'acetest.wav';
-
-      this.setState({ isRecording: false });
-    });
-
     startButton.addEventListener('click', () => {
       mediaRecorder.start();
       audioStartTime = Date.now();
+      console.log(`recorder started at ${audioStartTime}, state is ${mediaRecorder.state}`);
       this.setState({
         isRecording: true,
-        recordedChunks: [],
-       });
+        // recordedChunks: [],
+      });
     });
 
     stopButton.addEventListener('click', () => {
       mediaRecorder.stop();
-      const audioEndTime = Date.now(); // Add this line
+      console.log(mediaRecorder.state);
+      console.log("recorder stopped");
+      const audioEndTime = Date.now();
       const durationInSeconds = (audioEndTime - audioStartTime) / 1000;
       this.setState({
         isRecording: false,
         audioDuration: durationInSeconds,
-       });
+      });
       if (this.audioDurationElement.current) {
         this.audioDurationElement.current.innerText = `Audio Duration: ${durationInSeconds.toFixed(2)} seconds`;
       }
+    });
+
+    mediaRecorder.addEventListener('stop', () => {
+      // const blob = new Blob(this.state.recordedChunks, { 'type': 'audio/wav' });
+      const blob = new Blob(this.state.recordedChunks, { 'type': 'audio/ogg; codecs=opus' });
+      this.setState({
+        recordedChunks: [],
+      });
+      const url = URL.createObjectURL(blob);
+      const downloadLink = document.getElementById('download');
+      downloadLink.href = url;
+      downloadLink.download = 'acetest.wav';
+      
+      // this.setState({ isRecording: false });
+    });
+    
+    mediaRecorder.addEventListener('dataavailable', (e) => {
+      // if (e.data.size > 0) {
+      //   console.log(`Data size is ${e.data.size}`);
+      //   // this.setState((prevState) => ({
+      //   //   recordedChunks: [...prevState.recordedChunks, e.data],
+      //   // }));
+      //   // this.setState({
+      //   //   recordedChunks: [e.data],
+      //   // });
+      // }
+      this.setState({
+        recordedChunks: [e.data],
+      });
     });
   };
 
   componentDidMount() {
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
+      .then(console.log('getUserMedia supported.'))
       .then(this.handleSuccess);
   }
 
