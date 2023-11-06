@@ -94,3 +94,4 @@ target/
 # The stuff I want to exclude
 _*/
 scratch*
+postrgre/postgre_data/
