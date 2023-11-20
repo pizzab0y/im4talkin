@@ -1,42 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { FaSpinner } from "react-icons/fa";
-import AudioRecorder from './audiorecorder.jsx';
-import axios from 'axios';
+import { FaSpinner, FaPlus, FaComments, FaRegComments, FaKeyboard, FaRegKeyboard, FaRegShareSquare } from "react-icons/fa";
+import AudioRecorder from "./AudioRecorder.jsx";
+import axios from "axios";
 
 const App = () => {
   const [conversation, setConversation] = useState({ conversation: [] });
   const [userMessage, setUserMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [audioTranscription, setAudioTranscription] = useState("");
+  const [isTypingOn, setIsTypingOn] = useState(true);
+  const [isHistoryOn, setIsHistoryOn] = useState(true);
 
+  const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+  
   useEffect(() => {
     const fetchConversation = async () => {
       const conversationId = localStorage.getItem("conversationId");
       if (conversationId) {
         const response = await fetch(
           `http://localhost:8000/service2/${conversationId}`
-        );
+          );
         const data = await response.json();
         if (!data.error) {
           setConversation(data);
         }
       }
     };
-
+    
     fetchConversation();
   }, []);
+  
+  useEffect(() => {
+    if (audioTranscription !== "") {
+      console.log("audioTranscription state has changed:", audioTranscription);
+      handleSubmit();
+    }
+  }, [audioTranscription]);
 
   const generateConversationId = () =>
-    "_" + Math.random().toString(36).slice(2, 11);
-
+  "_" + Math.random().toString(36).slice(2, 11);
+  
   const handleInputChange = (event) => {
     setUserMessage(event.target.value);
+  };
+  
+  const handleTranscriptionChange = (newTranscription) => {
+    setAudioTranscription(newTranscription);
+  };  
+
+  const handleTypingChange = () => {
+    isTypingOn ? setIsTypingOn(false) : setIsTypingOn(true);
+  };
+
+  const handleHistoryChange = () => {
+    isHistoryOn ? setIsHistoryOn(false) : setIsHistoryOn(true);
   };
 
   const handleNewSession = () => {
     localStorage.removeItem("conversationId");
     setConversation({ conversation: [] });
-  };
-
+  };  
+  
   const handleSubmit = async () => {
     setIsLoading(true);
     let conversationId = localStorage.getItem("conversationId");
@@ -44,12 +68,20 @@ const App = () => {
       conversationId = generateConversationId();
       localStorage.setItem("conversationId", conversationId);
     }
-
-    const newConversation = [
-      ...conversation.conversation,
-      { role: "user", content: userMessage },
-    ];
-
+    
+    let newConversation;
+    if (audioTranscription) {
+      newConversation = [
+        ...conversation.conversation,
+        { role: "user", content: audioTranscription },
+      ];
+    } else {
+      newConversation = [
+        ...conversation.conversation,
+        { role: "user", content: userMessage },
+      ];
+    }
+    
     const response = await fetch(
       `http://localhost:8000/service2/${conversationId}`,
       {
@@ -61,12 +93,35 @@ const App = () => {
 
     const data = await response.json();
     setConversation(data);
+
+    const formData = new FormData();
+      formData.append("model", "tts-1");
+      // formData.append("file", file);
+      formData.append("voice", "alloy");
+      formData.append("input", data);
+      // formData.append("prompt", "All I speak is English.");
+      // formData.append("lang", "en");
+      
+      axios
+        .post("https://api.openai.com/v1/audio/speech", formData, {
+        headers: {
+          "Content-Type" : "multipart/form",
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          },
+        })
+        .then((res) => {
+          const response = res.data;
+          console.log(`We've got: ${response.text}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
     setUserMessage("");
-    setIsLoading(false);
-
-
+    setAudioTranscription("");
+    setIsLoading(false);    
   };
-
+      
   return (
     <div
       className="App flex flex-col items-center pt-6 min-h-screen bg-gray-900 text-sm"
@@ -79,11 +134,11 @@ const App = () => {
       }}
     >
       <h1 className="text-3xl font-bold mb-4 text-white">Hi! im4talkin 🇬🇧</h1>
-      {conversation.conversation.length > 0 && (
+      {conversation.conversation.length > 0 && isHistoryOn ? (
         <div
           className="flex flex-col p-4 bg-white rounded shadow w-full max-w-md space-y-4"
           style={{
-            maxHeight: "75vh",
+            maxHeight: "60vh",
             overflow: "auto",
             flexDirection: "column-reverse",
             overflowAnchor: "auto !important"
@@ -116,34 +171,54 @@ const App = () => {
             ))}
           </div>
         </div>
-      )}
-      <div className="flex flex-row w-full max-w-md mt-4">
-        <input
-          type="text"
-          value={userMessage}
-          onChange={handleInputChange}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              handleSubmit();
-            }
-          }}
-          className="flex-grow mr-2 p-2 rounded border-gray-300"
-          placeholder={isLoading ? "Processing..." : "Type your message here"}
-        />
+      ) : null}
+      {conversation.conversation.length > 0 && isHistoryOn ? (
         <button
-          onClick={handleSubmit}
-          disabled={isLoading | !userMessage}
-          className={
-            isLoading | !userMessage
-            ? "p-2 rounded text-white bg-blue-400"
-            : "p-2 rounded text-white bg-blue-800"
-          } 
+          className="mb-4 p-2 rounded-full bg-green-700 text-white absolute bottom-40 right-4"
+          onClick={handleHistoryChange}
+          type="button"
         >
-          Send
+          <FaComments className="text-3xl m-2"/>
         </button>
-      </div>
-      <AudioRecorder />
+      ) : null}
+      {conversation.conversation.length > 0 && !isHistoryOn ? (
+        <button
+          className="mb-4 p-2 rounded-full bg-gray-800 text-gray-400 absolute bottom-40 right-4"
+          onClick={handleHistoryChange}
+          type="button"
+        >
+          <FaComments className="text-3xl m-2"/>
+        </button>
+      ) : null}
+      {isTypingOn ? (
+        <div className="flex flex-row w-full max-w-md mt-4">
+          <input
+            type="text"
+            value={userMessage}
+            onChange={handleInputChange}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSubmit();
+              }
+            }}
+            className="flex-grow mr-2 p-2 rounded border-gray-300"
+            placeholder={isLoading ? "Processing..." : "Type your message here"}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading | !userMessage}
+            className={
+              isLoading | !userMessage
+              ? "p-2 rounded text-white bg-[#335b9b] w-16"
+              : "p-2 rounded text-white bg-[#003282] w-16"
+            } 
+          >
+            Send
+          </button>
+        </div>
+      ) : null}
+      <AudioRecorder onTranscriptionChange={handleTranscriptionChange} />
       {isLoading && (
         <div className="flex items-center space-x-4 text-l text-white">
           <FaSpinner className="animate-spin" />
@@ -152,10 +227,28 @@ const App = () => {
       )}
       <button
         onClick={handleNewSession}
-        className="mt-4 p-2 rounded bg-red-700 text-white absolute top-0 left-4"
+        className="mt-4 p-2 w-[62px] h-[62px] rounded-full bg-gray-200 absolute top-0 left-4"
       >
-        New Session
+        <p className="">New</p>
+        <FaRegShareSquare className="text-2xl ml-3 mr-2 mb-1 -mt-1" />
       </button>
+      {isTypingOn ? (
+        <button
+          className="mb-4 p-2 rounded-full bg-green-700 text-white absolute bottom-0 right-4"
+          onClick={handleTypingChange}
+          type="button"
+        >
+          <FaKeyboard className="text-3xl m-2"/>
+        </button>
+      ) : (
+        <button
+          className="mb-4 p-2 rounded-full bg-gray-800 text-gray-400 absolute bottom-0 right-4"
+          onClick={handleTypingChange}
+          type="button"
+        >
+          <FaKeyboard className="text-3xl m-2"/>
+        </button>
+      )}
     </div>
   );
 };

@@ -53,7 +53,7 @@ store = PGVector(
 )
 retriever = store.as_retriever()
 
-prompt_template = """As a user's friendly mate, you have the following information about them:
+prompt_template = """As a user's friendly mate named Marcel, you have the following information about them:
 
 {context}
 
