@@ -1,9 +1,9 @@
 # Here is the place where everyone can add everything:
 
-### User can switch on/switch off the subtitles. Both of his recognized speech and the AI buddy.
+### User can switch on/switch off the subtitles. Both of his recognized speech and the AI buddy
 ### Different voices
 It would be super cool to have conversations with different characters(voices). Perhaps it requires the use of more than one model to synthesise the voice. Via API this can be implemented with ElevenLabs.io, Revoicer.com 
-### Collecting the user's data which is vital for the further tailored topics can be organized as part of the starting-to-speak process.
+### Collecting the user's data which is vital for the further tailored topics can be organized as part of the starting-to-speak process
 By providing brief answers about himself, the user lays the foundation for further discussion (topics) and fills it with sufficient details.
 ### Ways to store user's data are:
 There are two different ways to store the user's data in vector form:
@@ -18,4 +18,5 @@ There are two different ways to store the user's data in vector form:
 * [ ] FAISS (Open Source)
 
 We should decide which one to choose according to data size and the processing speed. 
-### Background sound would help to create the presence effect.
+### Background sound would help to create the presence effect
+### Microphone calibration on the first launch

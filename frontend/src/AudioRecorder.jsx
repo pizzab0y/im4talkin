@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { FaSpinner, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import axios from 'axios';
 
-const AudioRecorder = ({ onTranscriptionChange }) => {
+const AudioRecorder = ({ onNewTranscription, onNewUserAudio }) => {
   const [permission, setPermission] = useState(false);
   const mediaRecorder = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -55,10 +55,6 @@ const AudioRecorder = ({ onTranscriptionChange }) => {
     if (typeof draw_wave_anim !== 'undefined') {cancelAnimationFrame(draw_wave_anim);}
     if (typeof draw_line_anim !== 'undefined') {cancelAnimationFrame(draw_line_anim);}
 
-    // canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-    // canvas.width = 0;
-    // canvas.height = 0;
-    // canvas.classList.add("hidden");
     canvas.style.display = "none";
     permission ? setPermission(false) : setPermission(true);
   };
@@ -121,6 +117,7 @@ const AudioRecorder = ({ onTranscriptionChange }) => {
     mediaRecorder.current.ondataavailable = (event) => {
       if (typeof event.data === "undefined") return;
       if (event.data.size === 0) return;
+      console.log(event);
       localAudioChunks.push(event.data);
     };
     setAudioChunks(localAudioChunks);
@@ -134,16 +131,21 @@ const AudioRecorder = ({ onTranscriptionChange }) => {
       if (navigator.userAgent.indexOf("Safari") >= 0 &&
       navigator.userAgent.indexOf("Chrome") < 0) {
         console.log("Safari browser detected");
-        var blob = new Blob(audioChunks, { type : 'audio/m4a; codecs="aac"' })
-        var fileName = 'to_transcript.m4a'
+        var blob = new Blob(audioChunks, { type : 'audio/m4a; codecs="aac"' });
+        var fileName = 'to_transcript.m4a';
         var file = new File([blob], fileName);
       }
       else {
-        console.log("Whooh... It's not Safari browser")
-        var blob = new Blob(audioChunks, { type : 'audio/ogg; codecs="otus"' })
-        var fileName = 'to_transcript.ogg'
+        console.log("Whooh... It's not Safari browser");
+        var blob = new Blob(audioChunks, { type : 'audio/ogg; codecs="opus"' });
+        var fileName = 'to_transcript.ogg';
         var file = new File([blob], fileName);
       }
+
+      const audioURL = window.URL.createObjectURL(blob);        
+      const audio = document.createElement('audio');   
+      audio.src = audioURL;
+      onNewUserAudio(audio);
 
       const formData = new FormData();
       formData.append("model", model);
@@ -162,7 +164,7 @@ const AudioRecorder = ({ onTranscriptionChange }) => {
           const response = res.data;
           console.log(`We've got: ${response.text}`);
           setTranscription(response.text);
-          onTranscriptionChange(response.text);
+          onNewTranscription(response.text);
         })
         .catch((err) => {
           console.log(err);

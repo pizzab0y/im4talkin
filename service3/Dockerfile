@@ -4,7 +4,10 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir fastapi uvicorn redis requests "openai<1.0.0" langchain python-dotenv postgres psycopg2-binary pgvector tiktoken
+# RUN apt-get update && apt-get install gcc ffmpeg python3-all-dev portaudio19-dev -y
+
+RUN pip install --no-cache-dir fastapi uvicorn redis requests "openai<1.0.0" langchain python-dotenv postgres psycopg2-binary pgvector tiktoken requests soundfile
+# requests soundfile pydub pyaudio
 
 # install postgresql client
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*

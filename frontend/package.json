@@ -11,10 +11,16 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "openai": "^4.15.4",
+    "buffer": "^6.0.3",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.2.0",
+    "openai": "^4.19.0",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.10.1"
+    "react-icons": "^4.10.1",
+    "speaker": "^0.5.4",
+    "wavesurfer-react": "^2.2.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",
