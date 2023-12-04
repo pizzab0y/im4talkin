@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FaSpinner, FaComments, FaKeyboard, FaRegShareSquare, FaPlay, FaPause} from "react-icons/fa";
 import AudioRecorder from "./AudioRecorder.jsx";
+import Questionnaire  from "./Questionnaire.jsx";
 import WaveSurfer from "wavesurfer.js";
 import axios from "axios";
 
 const App = () => {
+  const [gotData, setGotData] = useState(false);
   const [conversation, setConversation] = useState({ conversation: [] });
   const [userMessage, setUserMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -267,6 +269,9 @@ const App = () => {
       }}
     >
       <h1 className="text-3xl font-bold mb-4 text-white">Hi! im4talkin 🇬🇧</h1>
+
+      <Questionnaire />
+
       {conversation.conversation.length > 0 ? (
         <div
           id="conversationHistory"
@@ -331,7 +336,7 @@ const App = () => {
           </div>
         </div>
       ) : null}
-      {conversation.conversation.length > 0 && isHistoryOn ? (
+      {conversation.conversation.length > 0 && isHistoryOn && gotData ? (
         <button
           className="mb-4 p-2 rounded-full bg-green-700 text-white absolute bottom-40 right-4"
           onClick={handleHistoryChange}
@@ -340,7 +345,7 @@ const App = () => {
           <FaComments className="text-3xl m-2"/>
         </button>
       ) : null}
-      {conversation.conversation.length > 0 && !isHistoryOn ? (
+      {conversation.conversation.length > 0 && !isHistoryOn && gotData ? (
         <button
           className="mb-4 p-2 rounded-full bg-gray-800 text-gray-400 absolute bottom-40 right-4"
           onClick={handleHistoryChange}
@@ -349,7 +354,7 @@ const App = () => {
           <FaComments className="text-3xl m-2"/>
         </button>
       ) : null}
-      {isTypingOn ? (
+      {isTypingOn && gotData ? (
         <div className="flex flex-row w-full max-w-md mt-4">
           <input
             type="text"
@@ -377,39 +382,45 @@ const App = () => {
           </button>
         </div>
       ) : null}
-      <AudioRecorder onNewTranscription={handleTranscriptionChange} onNewUserAudio={handleUserAudioMessageChange}/>
+      {gotData ? (
+        <AudioRecorder onNewTranscription={handleTranscriptionChange} onNewUserAudio={handleUserAudioMessageChange}/>
+      ) : null}
       {isLoading && (
         <div className="flex items-center space-x-4 text-l text-white">
           <FaSpinner className="animate-spin" />
           <span>Loading...</span>
         </div>
       )}
-      <button
-        onClick={handleNewSession}
-        className="mt-4 p-2 rounded-full bg-gray-200 absolute top-0 left-4"
-      >
-        <div className="">
-          <p className="">New</p>
-          <FaRegShareSquare className="text-2xl ml-3.5 mr-2 mb-1.5 -mt-1" />
+      {gotData ? (
+        <div id="control-buttons">
+          <button
+            onClick={handleNewSession}
+            className="mt-4 p-2 rounded-full bg-gray-200 absolute top-0 left-4"
+          >
+            <div className="">
+              <p className="">New</p>
+              <FaRegShareSquare className="text-2xl ml-3.5 mr-2 mb-1.5 -mt-1" />
+            </div>
+          </button>
+          {isTypingOn ? (
+            <button
+              className="mb-4 p-2 rounded-full bg-green-700 text-white absolute bottom-0 right-4"
+              onClick={handleTypingChange}
+              type="button"
+            >
+              <FaKeyboard className="text-3xl m-2"/>
+            </button>
+          ) : (
+            <button
+              className="mb-4 p-2 rounded-full bg-gray-800 text-gray-400 absolute bottom-0 right-4"
+              onClick={handleTypingChange}
+              type="button"
+            >
+              <FaKeyboard className="text-3xl m-2"/>
+            </button>
+          )}
         </div>
-      </button>
-      {isTypingOn ? (
-        <button
-          className="mb-4 p-2 rounded-full bg-green-700 text-white absolute bottom-0 right-4"
-          onClick={handleTypingChange}
-          type="button"
-        >
-          <FaKeyboard className="text-3xl m-2"/>
-        </button>
-      ) : (
-        <button
-          className="mb-4 p-2 rounded-full bg-gray-800 text-gray-400 absolute bottom-0 right-4"
-          onClick={handleTypingChange}
-          type="button"
-        >
-          <FaKeyboard className="text-3xl m-2"/>
-        </button>
-      )}
+      ) : null}
     </div>
   );
 };
