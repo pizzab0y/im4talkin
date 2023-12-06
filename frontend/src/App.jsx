@@ -136,6 +136,10 @@ const App = () => {
     setAudioTranscription("");
     setIsLoading(false);    
   };
+
+  const handleQuestionnnaireSubmit = () => {
+    setGotData(true);
+  }
   
   // Function to convert text to speech
   async function generateAudio(
@@ -270,7 +274,7 @@ const App = () => {
     >
       <h1 className="text-3xl font-bold mb-4 text-white">Hi! im4talkin 🇬🇧</h1>
 
-      <Questionnaire />
+      {gotData ? null : (<Questionnaire onQuestionnaireSubmit={handleQuestionnnaireSubmit}/>)}
 
       {conversation.conversation.length > 0 ? (
         <div

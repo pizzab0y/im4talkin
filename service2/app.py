@@ -50,7 +50,7 @@ async def service2(conversation_id: str, conversation: Conversation):
         existing_conversation = json.loads(existing_conversation_json)
     else:
         existing_conversation = {"conversation": [{"role": "system",
-                                                   "content": "You are a polite native Chinese speaking person."}]}
+                                                   "content": "You are a polite native English speaking person."}]}
 
     existing_conversation["conversation"].append(conversation.dict()["conversation"][-1])
 
